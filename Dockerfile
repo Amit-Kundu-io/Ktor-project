@@ -15,5 +15,4 @@ EXPOSE 8080
 
 # Run the app
 CMD ["java", "-jar", "app.jar"]
-
 ENTRYPOINT ["top", "-b"]

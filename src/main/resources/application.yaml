@@ -1,0 +1,17 @@
+ktor:
+    application:
+        modules:
+            - com.a.ApplicationKt.module
+    deployment:
+        port: 8080
+jwt:
+  domain: "https://jwt-provider-domain/"
+  audience: "jwt-audience"
+  issuer: "https://jwt-provider-domain/"
+  realm: "ktor sample app"
+
+database :
+  url: "jdbc:postgresql://ep-hidden-feather-adgbdth1-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+  user: "neondb_owner"
+  driver: "org.postgresql.Driver"
+

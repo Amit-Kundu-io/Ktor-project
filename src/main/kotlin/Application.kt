@@ -19,4 +19,5 @@ fun Application.module() {
 
     val userServices = get<UserServices>()
     userRouts(userServices)
+    configureRouting()
 }

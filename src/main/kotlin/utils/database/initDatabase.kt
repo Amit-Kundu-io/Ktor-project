@@ -1,6 +1,7 @@
 package com.a.utils.database
 
 import com.a.NotesApp.features.auth.tables.UserTable
+import com.a.features.notes.data.table.NoteTable
 import io.github.cdimascio.dotenv.dotenv
 import io.ktor.server.application.Application
 import org.jetbrains.exposed.sql.Database
@@ -32,5 +33,6 @@ fun Application.initDatabase() {
     )
     transaction (db){
         SchemaUtils.create(UserTable)
+        SchemaUtils.create(NoteTable)
     }
 }

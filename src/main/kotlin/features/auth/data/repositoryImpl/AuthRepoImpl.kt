@@ -9,7 +9,7 @@ import com.a.features.auth.data.models.User
 import com.a.features.auth.entity.UserEntity
 import com.a.utils.helper.PasswordHasher
 import com.a.utils.helper.dbQuery
-import com.a.utils.helper.userIdGenerate
+import com.a.utils.helper.idGenerate
 
 
 class AuthRepoImpl : AuthRepo {
@@ -21,7 +21,7 @@ class AuthRepoImpl : AuthRepo {
             }
             val newUser = UserEntity.new {
                 this.userName = request.userName
-                this.userId = userIdGenerate()
+                this.userId = idGenerate()
                 this.password =  PasswordHasher.hash(request.password)
                 this.phNumber =request.phoneNumber
             }.let {

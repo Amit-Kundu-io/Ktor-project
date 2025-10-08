@@ -2,6 +2,7 @@ package com.a
 
 import com.a.di.configureKoin
 import com.a.features.auth.routes.authRouts
+import com.a.features.notes.routes.noteRouts
 import com.a.plugins.serializationPlugin
 import com.a.utils.database.initDatabase
 import io.ktor.server.application.*
@@ -16,5 +17,6 @@ fun Application.module() {
     configureRouting()
     serializationPlugin()
     authRouts()
+    noteRouts()
 
 }

@@ -1,18 +1,25 @@
-FROM ubuntu:latest
+# Use a standard, trusted base image with Java 17
+FROM eclipse-temurin:17-jdk-jammy
 
-LABEL authors="Amit"
-# Use Java 17 runtime
-FROM openjdk:17-jdk-slim
-
-# Set working directory inside the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the fat JAR into container
-COPY build/libs/ktor-app.jar app.jar
+# Copy the Gradle wrapper and build files
+COPY gradlew .
+COPY gradle ./gradle
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+COPY gradle.properties .
+COPY src ./src
 
-# Expose port your Ktor uses
+# Grant execution permissions to the Gradle wrapper
+RUN chmod +x ./gradlew
+
+# Build the fat JAR. This runs inside Render's servers.
+RUN ./gradlew build -x test --no-daemon
+
+# Expose the port Ktor will run on
 EXPOSE 8080
 
-# Run the app
-CMD ["java", "-jar", "app.jar"]
-ENTRYPOINT ["top", "-b"]
+# Command to run the application when the container starts
+CMD ["java", "-jar", "build/libs/ktor-notes-backend-all.jar"]

@@ -29,27 +29,21 @@ fun Application.initDatabase() {
 
      */
 
-    val dotenv = dotenv()
+
     val env = System.getenv("APP_ENV") ?: "local"
 
-    val url = System.getenv("DB_URL") ?: when (env) {
-        "local" -> dotenv["DB_URL"]
-        else -> throw IllegalStateException("Missing DB_URL")
+    val dotenv = if (env == "local") io.github.cdimascio.dotenv.dotenv() else null
+
+    fun getEnvOrDotenv(key: String): String {
+        return System.getenv(key)
+            ?: dotenv?.get(key)
+            ?: throw IllegalStateException("Missing environment variable: $key")
     }
 
+    val url = getEnvOrDotenv("DB_URL")
     val driver = System.getenv("DB_DRIVER") ?: "org.postgresql.Driver"
-    val user = System.getenv("DB_USER") ?: when (env) {
-        "local" -> dotenv["DB_USER"]
-        else -> throw IllegalStateException("Missing DB_USER")
-    }
-
-    val password = System.getenv("DB_PASSWORD") ?: when (env) {
-        "local" -> dotenv["DB_PASSWORD"]
-        else -> throw IllegalStateException("Missing DB_PASSWORD")
-    }
-
-
-
+    val user = getEnvOrDotenv("DB_USER")
+    val password = getEnvOrDotenv("DB_PASSWORD")
 
     val db = Database.connect(
         url = url,

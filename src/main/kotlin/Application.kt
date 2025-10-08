@@ -5,11 +5,21 @@ import com.a.features.auth.routes.authRouts
 import com.a.features.notes.routes.noteRouts
 import com.a.plugins.serializationPlugin
 import com.a.utils.database.initDatabase
+import io.github.cdimascio.dotenv.dotenv
 import io.ktor.server.application.*
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 
-fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
+//fun main(args: Array<String>) {
+//    io.ktor.server.netty.EngineMain.main(args)
+//}
+
+fun main() {
+    val dotenv = dotenv()
+    embeddedServer(Netty, port = dotenv["PORT"]?.toInt() ?: 8080, module = Application::module)
+        .start(wait = true)
 }
+
 
 fun Application.module() {
     initDatabase()

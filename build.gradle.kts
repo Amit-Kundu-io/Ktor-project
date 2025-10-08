@@ -2,8 +2,11 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.kotlin.plugin.serialization)
+    application
 }
-
+application {
+    mainClass.set("io.ktor.server.netty.EngineMain")
+}
 group = "com.a"
 version = "0.0.1"
 
@@ -41,4 +44,10 @@ dependencies {
 
 
 
+}
+tasks {
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        archiveBaseName.set("ktor-notes-backend")
+        archiveClassifier.set("all")
+    }
 }

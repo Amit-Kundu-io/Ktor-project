@@ -1,25 +1,40 @@
-# Use a standard, trusted base image with Java 17
-FROM eclipse-temurin:17-jdk-jammy
+# =========================
+# Stage 1: Build the fat JAR
+# =========================
+FROM eclipse-temurin:17-jdk-jammy AS build
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy the Gradle wrapper and build files
+# Copy Gradle wrapper and configuration files
 COPY gradlew .
 COPY gradle ./gradle
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
 COPY gradle.properties .
+
+# Copy source code
 COPY src ./src
 
-# Grant execution permissions to the Gradle wrapper
+# Make Gradle wrapper executable
 RUN chmod +x ./gradlew
 
-# Build the fat JAR. This runs inside Render's servers.
-RUN ./gradlew build -x test --no-daemon
+# Build the fat JAR using shadowJar (skip tests)
+RUN ./gradlew shadowJar -x test --no-daemon
+
+# =========================
+# Stage 2: Runtime
+# =========================
+FROM eclipse-temurin:17-jdk-jammy
+
+# Set working directory
+WORKDIR /app
+
+# Copy the fat JAR from the build stage
+COPY --from=build /app/build/libs/ktor-notes-backend-all.jar .
 
 # Expose the port Ktor will run on
 EXPOSE 8080
 
-# Command to run the application when the container starts
-CMD ["java", "-jar", "build/libs/ktor-notes-backend-all.jar"]
+# Run the Ktor server
+CMD ["java", "-jar", "ktor-notes-backend-all.jar"]

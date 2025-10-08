@@ -16,7 +16,13 @@ import io.ktor.server.netty.Netty
 
 fun main() {
     val dotenv = dotenv()
-    embeddedServer(Netty, port = dotenv["PORT"]?.toInt() ?: 8080, module = Application::module)
+    val env = System.getenv("APP_ENV") ?: "local"
+    val port = System.getenv("PORT") ?: when (env) {
+        "local" -> dotenv["PORT"]
+        else -> "8080"
+    }
+
+    embeddedServer(Netty, port = port.toInt() , module = Application::module)
         .start(wait = true)
 }
 

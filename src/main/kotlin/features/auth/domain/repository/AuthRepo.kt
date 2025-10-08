@@ -1,0 +1,8 @@
+package com.a.NotesApp.features.auth.repository
+
+import com.a.NotesApp.features.auth.models.RegisterRequest
+import com.a.features.auth.data.models.User
+
+interface AuthRepo {
+    suspend fun createUser(request : RegisterRequest) : User?
+}

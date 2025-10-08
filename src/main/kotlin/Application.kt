@@ -1,23 +1,20 @@
 package com.a
 
-import com.a.db.initDB
 import com.a.di.configureKoin
-import com.a.domain.services.UserServices
-import com.a.routes.userRouts
+import com.a.features.auth.routes.authRouts
+import com.a.plugins.serializationPlugin
+import com.a.utils.database.initDatabase
 import io.ktor.server.application.*
-import org.koin.ktor.ext.get
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
 
 fun Application.module() {
-   //    configureRouting()
+    initDatabase()
     configureKoin()
-    initDB()
-    configureContentNegotiation()
-
-    val userServices = get<UserServices>()
-    userRouts(userServices)
     configureRouting()
+    serializationPlugin()
+    authRouts()
+
 }

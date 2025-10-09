@@ -6,6 +6,7 @@ import com.a.features.notes.domain.repository.NoteRepo
 import com.a.features.notes.domain.service.NoteServices
 import com.a.utils.helper.ApiResponse
 import io.ktor.http.HttpStatusCode
+import kotlin.system.measureTimeMillis
 
 class NoteServiceImpl(
     private val noteRepo: NoteRepo
@@ -59,25 +60,25 @@ class NoteServiceImpl(
                     statusCode =  HttpStatusCode.NotFound.value
                 )
             }
+                val result = userId.let { noteRepo.getAllNote(it) }
+                if (result == null) {
+                    ApiResponse(
+                        message = listOf("Note not found"),
+                        succeeded = false,
+                        totalItems = 0,
+                        data = null,
+                        statusCode = HttpStatusCode.BadRequest.value
+                    )
+                } else {
+                    ApiResponse(
+                        message = listOf("Note get successfully"),
+                        succeeded = true,
+                        totalItems = result.size,
+                        data = result,
+                        statusCode = HttpStatusCode.OK.value
+                    )
+                }
 
-            val result = userId.let { noteRepo.getAllNote(it) }
-            if (result == null) {
-                ApiResponse(
-                    message = listOf("Note not found"),
-                    succeeded = false,
-                    totalItems = 0,
-                    data = null,
-                    statusCode = HttpStatusCode.BadRequest.value
-                )
-            } else {
-                ApiResponse(
-                    message = listOf("Note get successfully"),
-                    succeeded = true,
-                    totalItems = result.size,
-                    data = result,
-                    statusCode = HttpStatusCode.OK.value
-                )
-            }
 
         } catch (e: Exception) {
             ApiResponse(

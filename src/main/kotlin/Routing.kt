@@ -15,14 +15,11 @@ import org.jetbrains.exposed.sql.*
 import kotlin.system.measureTimeMillis
 
 fun Application.configureRouting() {
+    routing {
+        get("/") {
 
-        routing {
+            call.respondText("Hello World")
 
-            get("/") {
-                val time = measureTimeMillis {
-                call.respondText("Hello World!")
-            }
-                print("time checking $time ms")
         }
 
     }

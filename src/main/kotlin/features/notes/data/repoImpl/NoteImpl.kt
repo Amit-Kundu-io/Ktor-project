@@ -9,52 +9,59 @@ import com.a.features.notes.domain.repository.NoteRepo
 import com.a.features.notes.entity.NotesEntity
 import com.a.utils.helper.dbQuery
 import com.a.utils.helper.idGenerate
+import jdk.jfr.internal.JVM.log
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
+import kotlin.system.measureTimeMillis
 
 class NoteImpl : NoteRepo {
+
+
     override suspend fun createAndUpdateNote(request: NoteRequest): Note? {
-        return dbQuery {
-            val user = UserEntity.find { UserTable.userId eq request.userId }
-                .firstOrNull()
-                ?.toUser()
+        var result: Note? = null
+        val time = measureTimeMillis {
+            result = dbQuery {
+                UserEntity.find { UserTable.userId eq request.userId }.firstOrNull() ?: return@dbQuery null
 
-            if (user == null) return@dbQuery null
-
-            if (request.noteId.isNullOrBlank()) {
-                // Create a new note with a random string ID
-                val newId = idGenerate()
-                val note = NotesEntity.new(newId) {
-                    noteTitle = request.noteTitle
-                    noteContains = request.noteContains
-                    userId = request.userId
+                if (request.noteId.isNullOrBlank()) {
+                    // Create
+                    val newId = idGenerate()
+                    NotesEntity.new(newId) {
+                        userId = request.userId
+                        noteTitle = request.noteTitle
+                        noteContains = request.noteContains
+                    }.toNote()
+                } else {
+                    // Update
+                    NoteTable.update({ NoteTable.id eq request.noteId }) {
+                        it[noteTitle] = request.noteTitle
+                        it[noteContains] = request.noteContains
+                    }
+                    NotesEntity.findById(request.noteId)?.toNote()
                 }
-                note.toNote()
-            } else {
-                // Update existing note
-                NoteTable.update({ NoteTable.id eq request.noteId }) {
-                    it[noteTitle] = request.noteTitle
-                    it[noteContains] = request.noteContains
-                }
-
-                Note(
-                    noteId = request.noteId,
-                    noteTitle = request.noteTitle,
-                    noteContains = request.noteContains,
-                    userId = request.userId
-                )
             }
         }
+        println("createAndUpdateNote executed in $time ms")
+        return result
     }
+
 
     override suspend fun getAllNote(userId: String): List<Note?>? {
         return dbQuery {
-            val notes = NotesEntity.find { NoteTable.userId eq userId }
-                .map { it.toNote() }
-            return@dbQuery notes
+            //var result: List<Note?>? = null
+
+            val rawNotes = NotesEntity.find { NoteTable.userId eq userId }
+            val result = mutableListOf<Note?>()
+            rawNotes.forEachIndexed { i, entity ->
+                 result.add(entity.toNote())
+            }
+
+            return@dbQuery result
         }
     }
+
 
     override suspend fun deleteNote(noteId: String): Note? {
         return dbQuery {

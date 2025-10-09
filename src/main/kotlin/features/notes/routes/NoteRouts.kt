@@ -7,6 +7,7 @@ import com.a.features.notes.data.models.NoteRequest
 import com.a.features.notes.domain.service.NoteServices
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.delete
@@ -36,7 +37,7 @@ fun Application.noteRouts() {
             }
 
             delete("/delete") {
-                val noteId = call.request.queryParameters["noteId"]
+                val noteId = call.request.queryParameters["noteId"] ?: throw BadRequestException("Missing note ID")
                 val response = services.deleteNote(noteId)
                 call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
             }

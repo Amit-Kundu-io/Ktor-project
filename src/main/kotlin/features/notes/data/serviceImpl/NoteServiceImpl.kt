@@ -5,6 +5,7 @@ import com.a.features.notes.data.models.NoteRequest
 import com.a.features.notes.domain.repository.NoteRepo
 import com.a.features.notes.domain.service.NoteServices
 import com.a.utils.helper.ApiResponse
+import io.ktor.http.HttpStatusCode
 
 class NoteServiceImpl(
     private val noteRepo: NoteRepo
@@ -22,7 +23,7 @@ class NoteServiceImpl(
                     succeeded = false,
                     totalItems = 0,
                     data = null,
-                    statusCode = 400
+                    statusCode = HttpStatusCode.BadRequest.value
                 )
             } else {
                 ApiResponse(
@@ -30,7 +31,7 @@ class NoteServiceImpl(
                     succeeded = true,
                     totalItems = 0,
                     data = result,
-                    statusCode = 200
+                    statusCode =  HttpStatusCode.OK.value
                 )
             }
 
@@ -41,7 +42,7 @@ class NoteServiceImpl(
                 succeeded = false,
                 totalItems = 0,
                 data = null,
-                statusCode = 500
+                statusCode =  HttpStatusCode.InternalServerError.value
             )
         }
     }
@@ -55,7 +56,7 @@ class NoteServiceImpl(
                     succeeded = true,
                     totalItems = 0,
                     data = null,
-                    statusCode = 404
+                    statusCode =  HttpStatusCode.NotFound.value
                 )
             }
 
@@ -66,7 +67,7 @@ class NoteServiceImpl(
                     succeeded = false,
                     totalItems = 0,
                     data = null,
-                    statusCode = 404
+                    statusCode = HttpStatusCode.BadRequest.value
                 )
             } else {
                 ApiResponse(
@@ -74,7 +75,7 @@ class NoteServiceImpl(
                     succeeded = true,
                     totalItems = result.size,
                     data = result,
-                    statusCode = 200
+                    statusCode = HttpStatusCode.OK.value
                 )
             }
 
@@ -84,7 +85,7 @@ class NoteServiceImpl(
                 succeeded = false,
                 totalItems = 0,
                 data = null,
-                statusCode = 500
+                statusCode = HttpStatusCode.InternalServerError.value
             )
         }
     }
@@ -98,7 +99,7 @@ class NoteServiceImpl(
                     succeeded = false,
                     totalItems = 0,
                     data = null,
-                    statusCode = 404
+                    statusCode = HttpStatusCode.NotFound.value
                 )
 
             }
@@ -111,7 +112,7 @@ class NoteServiceImpl(
                     totalItems = 1,
                     type = "Note",
                     data = response,
-                    statusCode = 200
+                    statusCode = HttpStatusCode.OK.value
                 )
             }
             else{
@@ -120,7 +121,7 @@ class NoteServiceImpl(
                     succeeded = false,
                     totalItems = 1,
                     data = null,
-                    statusCode = 200
+                    statusCode = HttpStatusCode.BadRequest.value
                 )
             }
         }
@@ -130,7 +131,7 @@ class NoteServiceImpl(
                 succeeded = false,
                 totalItems = 0,
                 data = null,
-                statusCode = 500
+                statusCode = HttpStatusCode.InternalServerError.value
             )
         }
     }

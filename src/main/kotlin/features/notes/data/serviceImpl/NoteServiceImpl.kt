@@ -71,7 +71,7 @@ class NoteServiceImpl(
                 )
             } else {
                 ApiResponse(
-                    message = listOf("Note found"),
+                    message = listOf("Note get successfully"),
                     succeeded = true,
                     totalItems = result.size,
                     data = result,

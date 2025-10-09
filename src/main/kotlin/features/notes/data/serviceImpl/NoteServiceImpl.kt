@@ -21,7 +21,6 @@ class NoteServiceImpl(
                     message = listOf("Failed to create and update note"),
                     succeeded = false,
                     totalItems = 0,
-                    type = "Note",
                     data = null,
                     statusCode = 400
                 )
@@ -30,7 +29,6 @@ class NoteServiceImpl(
                     message = listOf("Successfully create or update"),
                     succeeded = true,
                     totalItems = 0,
-                    type = "Note",
                     data = result,
                     statusCode = 200
                 )
@@ -42,7 +40,6 @@ class NoteServiceImpl(
                 message = listOf("Failed to create and update note $e"),
                 succeeded = false,
                 totalItems = 0,
-                type = "Note",
                 data = null,
                 statusCode = 500
             )
@@ -53,23 +50,21 @@ class NoteServiceImpl(
 
         return try {
             if (userId.isNullOrBlank()) {
-                ApiResponse(
+               return ApiResponse(
                     message = listOf("Id not null or blank"),
                     succeeded = true,
                     totalItems = 0,
-                    type = "Notes",
                     data = null,
                     statusCode = 404
                 )
             }
 
-            val result = userId?.let { noteRepo.getAllNote(it) }
+            val result = userId.let { noteRepo.getAllNote(it) }
             if (result == null) {
                 ApiResponse(
                     message = listOf("Note not found"),
                     succeeded = false,
                     totalItems = 0,
-                    type = "Notes",
                     data = null,
                     statusCode = 404
                 )
@@ -78,7 +73,6 @@ class NoteServiceImpl(
                     message = listOf("Note found"),
                     succeeded = true,
                     totalItems = result.size,
-                    type = "Notes",
                     data = result,
                     statusCode = 200
                 )
@@ -89,7 +83,52 @@ class NoteServiceImpl(
                 message = listOf("Failed to get note"),
                 succeeded = false,
                 totalItems = 0,
-                type = "Notes",
+                data = null,
+                statusCode = 500
+            )
+        }
+    }
+
+    override suspend fun deleteNote(noteId: String?): ApiResponse<Note?> {
+        return try {
+
+            if (noteId.isNullOrBlank()){
+                return  ApiResponse(
+                    message = listOf("Note id not null or blank"),
+                    succeeded = false,
+                    totalItems = 0,
+                    data = null,
+                    statusCode = 404
+                )
+
+            }
+
+            val response = noteRepo.deleteNote(noteId)
+            if (response != null){
+                ApiResponse(
+                    message = listOf("Note delete successfully"),
+                    succeeded = true,
+                    totalItems = 1,
+                    type = "Note",
+                    data = response,
+                    statusCode = 200
+                )
+            }
+            else{
+                ApiResponse(
+                    message = listOf("Failed to get note"),
+                    succeeded = false,
+                    totalItems = 1,
+                    data = null,
+                    statusCode = 200
+                )
+            }
+        }
+        catch (e : Exception){
+            ApiResponse(
+                message = listOf("Failed to delete note"),
+                succeeded = false,
+                totalItems = 0,
                 data = null,
                 statusCode = 500
             )

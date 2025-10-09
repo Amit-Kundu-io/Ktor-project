@@ -7,6 +7,8 @@ import com.a.features.notes.domain.repository.NoteRepo
 import com.a.features.notes.entity.NotesEntity
 import com.a.utils.helper.dbQuery
 import com.a.utils.helper.idGenerate
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
 
 class NoteImpl : NoteRepo {
@@ -43,6 +45,22 @@ class NoteImpl : NoteRepo {
           val notes =  NotesEntity.find { NoteTable.userId eq userId }
                 .map { it.toNote() }
             return@dbQuery notes
+        }
+    }
+
+    override suspend fun deleteNote(noteId: String): Note? {
+        return dbQuery {
+            val note = NotesEntity.find { NoteTable.noteId eq noteId }
+                .firstOrNull()
+                ?.toNote()
+
+            if (note != null){
+                NoteTable.deleteWhere { NoteTable.noteId eq noteId }
+                note
+            }
+            else {
+                null
+            }
         }
     }
 

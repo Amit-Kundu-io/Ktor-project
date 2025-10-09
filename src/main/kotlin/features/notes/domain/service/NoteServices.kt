@@ -7,6 +7,7 @@ import com.a.utils.helper.ApiResponse
 interface NoteServices {
     suspend fun createAndUpdateNote(request: NoteRequest) : ApiResponse<Note?>
     suspend fun getAllNotes(userId: String?) : ApiResponse<List<Note?>?>
+    suspend fun deleteNote(noteId : String?) : ApiResponse<Note?>
 
 
 }

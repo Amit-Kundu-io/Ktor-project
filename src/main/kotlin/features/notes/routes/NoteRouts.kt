@@ -9,6 +9,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
@@ -31,6 +32,12 @@ fun Application.noteRouts() {
             get("/getnotes"){
                 val userId = call.request.queryParameters["userId"]
                 val response = services.getAllNotes(userId)
+                call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
+            }
+
+            delete("/delete") {
+                val noteId = call.request.queryParameters["noteId"]
+                val response = services.deleteNote(noteId)
                 call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
             }
         }

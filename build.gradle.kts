@@ -45,4 +45,6 @@ dependencies {
 
     implementation("io.ktor:ktor-server-status-pages-jvm")
     implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("io.ktor:ktor-server-compression-jvm:2.3.7")
+
 }

@@ -10,7 +10,8 @@ import kotlin.system.measureTimeMillis
 
 class NoteServiceImpl(
     private val noteRepo: NoteRepo
-) : NoteServices {
+) : NoteServices
+{
     override suspend fun createAndUpdateNote(request: NoteRequest): ApiResponse<Note?> {
         val result = noteRepo.createAndUpdateNote(request)
 

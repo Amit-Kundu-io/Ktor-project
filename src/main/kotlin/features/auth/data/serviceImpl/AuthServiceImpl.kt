@@ -6,14 +6,20 @@ import com.a.NotesApp.features.auth.service.AuthService
 import com.a.features.auth.data.models.LoginRequest
 import com.a.features.auth.data.models.User
 import com.a.utils.helper.ApiResponse
+import kotlin.system.measureTimeMillis
 
 class AuthServiceImpl(
     private val authRepo: AuthRepo
 ) : AuthService {
     override suspend fun createUser(request: RegisterRequest): ApiResponse<User?> {
-        val result = authRepo.createUser(request)
+        var result: User? = null
+        val time = measureTimeMillis {
+            result = authRepo.createUser(request)
+        }
+        println("create a user executed in $time ms for userId=${result?.userId}")
+
         return try {
-            if (result == null){
+            if (result == null) {
                 ApiResponse(
                     message = listOf("User with this phone number already exists"),
                     succeeded = false,
@@ -22,7 +28,7 @@ class AuthServiceImpl(
                     data = null,
                     statusCode = 409
                 )
-            }else{
+            } else {
                 ApiResponse(
                     message = listOf("User created successfully"),
                     succeeded = true,
@@ -32,8 +38,7 @@ class AuthServiceImpl(
                     statusCode = 201
                 )
             }
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             ApiResponse(
                 message = listOf("Failed to create user"),
                 succeeded = false,
@@ -47,29 +52,27 @@ class AuthServiceImpl(
 
     override suspend fun loginUser(request: LoginRequest): ApiResponse<User?> {
         val result = authRepo.loginUser(request)
-       return try {
-            if (result?.second == null){
+        return try {
+            if (result?.second == null) {
                 ApiResponse(
-                    message = listOf(result?.first?: ""),
+                    message = listOf(result?.first ?: ""),
                     succeeded = false,
                     totalItems = 0,
                     type = "User",
                     data = null,
                     statusCode = 401
                 )
-            }
-           else{
+            } else {
                 ApiResponse(
                     message = listOf("Password match"),
                     succeeded = true,
                     totalItems = 0,
                     type = "User",
                     data = result.second,
-                    statusCode =  200
+                    statusCode = 200
                 )
             }
-        }
-        catch (e : Exception){
+        } catch (e: Exception) {
             ApiResponse(
                 message = listOf("Failed to get user"),
                 succeeded = false,

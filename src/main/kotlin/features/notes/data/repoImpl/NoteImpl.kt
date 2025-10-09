@@ -11,6 +11,9 @@ import com.a.utils.helper.dbQuery
 import com.a.utils.helper.idGenerate
 import jdk.jfr.internal.JVM.log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
@@ -24,52 +27,43 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 class NoteImpl : NoteRepo {
 
 
-    override suspend fun createAndUpdateNote(request: NoteRequest): Note? {
-        var result: Note? = null
-        val time = measureTimeMillis {
-            result = dbQuery {
-                UserEntity.find { UserTable.userId eq request.userId }.firstOrNull() ?: return@dbQuery null
+    override suspend fun createAndUpdateNote(request: NoteRequest): Note? = dbQuery {
+        val user = UserEntity.find { UserTable.userId eq request.userId }.firstOrNull() ?: return@dbQuery null
 
-                if (request.noteId.isNullOrBlank()) {
-                    // Create
-                    val newId = idGenerate()
-                    NotesEntity.new(newId) {
-                        userId = request.userId
-                        noteTitle = request.noteTitle
-                        noteContains = request.noteContains
-                    }.toNote()
-                } else {
-                    // Update
-                    NoteTable.update({ NoteTable.id eq request.noteId }) {
-                        it[noteTitle] = request.noteTitle
-                        it[noteContains] = request.noteContains
-                    }
-                    NotesEntity.findById(request.noteId)?.toNote()
-                }
-            }
+        if (request.noteId.isNullOrBlank()) {
+            // Create
+            val newId = idGenerate()
+            NotesEntity.new(newId) {
+                userId = user.userId
+                noteTitle = request.noteTitle
+                noteContains = request.noteContains
+            }.toNote()
+        } else {
+            // Update
+            val note = NotesEntity.findById(request.noteId) ?: return@dbQuery null
+            note.noteTitle = request.noteTitle
+            note.noteContains = request.noteContains
+            note.toNote()
         }
-        println("createAndUpdateNote executed in $time ms")
-        return result
+    }
+
+
+
+    override suspend fun getAllNote(userId: String): List<Note?>? = dbQuery {
+        NotesEntity.find { NoteTable.userId eq userId }
+            .limit(10)
+            .map { it.toNote() }
     }
 
 
-    override suspend fun getAllNote(userId: String): List<Note?>? =
-        newSuspendedTransaction(Dispatchers.IO) {
-            NotesEntity.find { NoteTable.userId eq userId }
-                .map { it.toNote() }
-                .takeIf { it.isNotEmpty() } // returns null if empty
-        }
 
-
-
-    override suspend fun deleteNote(noteId: String): Note? {
-        return dbQuery {
-            NotesEntity.findById(noteId)?.let { note ->
-                NoteTable.deleteWhere { NoteTable.id eq noteId }
-                note.toNote()
-            }
-        }
+    override suspend fun deleteNote(noteId: String): Note? = dbQuery {
+        val note = NotesEntity.findById(noteId) ?: return@dbQuery null
+        val result = note.toNote()
+        note.delete()
+        result
     }
+
 
 
 }

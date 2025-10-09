@@ -1,17 +1,17 @@
 package com.a
-
+import com.a.NotesApp.features.auth.service.AuthService
 import com.a.di.configureKoin
 import com.a.features.auth.routes.authRouts
+import com.a.features.notes.domain.service.NoteServices
 import com.a.features.notes.routes.noteRouts
 import com.a.plugins.serializationPlugin
 import com.a.utils.database.DatabaseFactory
-import com.a.utils.database.initDatabase
-import com.a.utils.docsRoutes
 import com.a.utils.helper.configureStatusPages
-import io.github.cdimascio.dotenv.dotenv
 import io.ktor.server.application.*
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import org.koin.ktor.ext.inject
+import io.ktor.server.plugins.compression.*
 
 //fun main(args: Array<String>) {
 //    io.ktor.server.netty.EngineMain.main(args)
@@ -34,13 +34,20 @@ fun main() {
 
 fun Application.module() {
     DatabaseFactory.init()
+    val authServices : AuthService by inject()
+    val noteServices : NoteServices by inject()
     configureStatusPages()
     //docsRoutes()
    // initDatabase()
     configureKoin()
     configureRouting()
     serializationPlugin()
-    authRouts()
-    noteRouts()
+    install(Compression) {
+        gzip {
+            priority = 1.0
+        }
+    }
+    authRouts(authServices)
+    noteRouts(noteServices)
 
 }

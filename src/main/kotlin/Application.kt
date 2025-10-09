@@ -5,6 +5,7 @@ import com.a.features.auth.routes.authRouts
 import com.a.features.notes.routes.noteRouts
 import com.a.plugins.serializationPlugin
 import com.a.utils.database.initDatabase
+import com.a.utils.docsRoutes
 import com.a.utils.helper.configureStatusPages
 import io.github.cdimascio.dotenv.dotenv
 import io.ktor.server.application.*
@@ -32,6 +33,7 @@ fun main() {
 
 fun Application.module() {
     configureStatusPages()
+    //docsRoutes()
     initDatabase()
     configureKoin()
     configureRouting()

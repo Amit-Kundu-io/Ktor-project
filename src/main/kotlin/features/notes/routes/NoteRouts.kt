@@ -37,7 +37,7 @@ fun Application.noteRouts() {
                     val response = services.getAllNotes(userId)
                     call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
                 }
-                println(" $time ms")
+                println("routs $time ms")
 
             }
                 delete("/delete") {

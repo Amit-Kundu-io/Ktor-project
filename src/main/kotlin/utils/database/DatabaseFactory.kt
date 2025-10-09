@@ -12,7 +12,7 @@ object DatabaseFactory {
     private var initialized = false
 
     fun init() {
-        if (initialized) return // prevent multiple init
+        if (initialized) return
         initialized = true
 
         val env = System.getenv("APP_ENV") ?: "local"
@@ -24,32 +24,33 @@ object DatabaseFactory {
                 ?: default
                 ?: throw IllegalStateException("Missing environment variable: $key")
 
-        val url = getEnv("DB_URL")
-        val driver = getEnv("DB_DRIVER", "org.postgresql.Driver")
-        val user = getEnv("DB_USER")
-        val dbPassword = getEnv("DB_PASSWORD")
-
-        // HikariCP configuration for connection pooling
         val config = HikariConfig().apply {
-            jdbcUrl = url
-            driverClassName = driver
-            username = user
-            password = dbPassword
-            maximumPoolSize = 10   // maximum connections
-            minimumIdle = 5        // minimum idle connections
+            jdbcUrl = getEnv("DB_URL")
+            driverClassName = getEnv("DB_DRIVER", "org.postgresql.Driver")
+            username = getEnv("DB_USER")
+            password = getEnv("DB_PASSWORD")
+            maximumPoolSize = 10
+            minimumIdle = 5
             isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            idleTimeout = 600_000
+            maxLifetime = 1_800_000
+            initializationFailTimeout = 1  // Fail fast if DB is unreachable
             validate()
         }
 
         val dataSource = HikariDataSource(config)
-
-        // Connect Exposed to HikariCP
         Database.connect(dataSource)
 
+        // Warm-up connection pool
         transaction {
-            SchemaUtils.createMissingTablesAndColumns(UserTable, NoteTable)
+            exec("SELECT 1;")
         }
+
+            transaction {
+                SchemaUtils.createMissingTablesAndColumns(UserTable, NoteTable)
+            }
+
 
         println("✅ Database initialized once.")
     }

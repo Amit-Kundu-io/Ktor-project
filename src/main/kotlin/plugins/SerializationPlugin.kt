@@ -7,12 +7,15 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import kotlinx.serialization.json.Json
 
 
-fun Application.serializationPlugin()  {
-    install(ContentNegotiation){
+fun Application.serializationPlugin() {
+    install(ContentNegotiation) {
         json(
-            Json{
-                prettyPrint= true
+            Json {
+                prettyPrint = false
+                isLenient = true    // Accept non-strict JSON
+                ignoreUnknownKeys = true // Ignore extra fields from clients
             }
         )
     }
+
 }

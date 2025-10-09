@@ -9,25 +9,34 @@ import io.ktor.server.request.*
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-
-fun Application.authRouts() {
-
-        val authService: AuthService by inject()
-
+fun Application.authRouts(authService: AuthService) {
     routing {
-        route("api/users") {
+        route("/api/users") {
             post("/register") {
-                val request = call.receive<RegisterRequest>()
+                val request = try {
+                    call.receive<RegisterRequest>()
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.BadRequest, "Invalid registration data")
+                    return@post
+                }
+
                 val response = authService.createUser(request)
-                call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
+                call.respond(HttpStatusCode.fromValue(response.statusCode), response)
             }
 
             post("/login") {
-                val request = call.receive<LoginRequest>()
+                val request = try {
+                    call.receive<LoginRequest>()
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.BadRequest, "Invalid login data")
+                    return@post
+                }
+
                 val response = authService.loginUser(request)
-                call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
+                call.respond(HttpStatusCode.fromValue(response.statusCode), response)
             }
         }
     }
 }
+
 

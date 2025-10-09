@@ -5,6 +5,7 @@ import com.a.features.auth.data.models.User
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 
 class UserEntity(id : EntityID<Int>) : IntEntity(id) {
@@ -20,4 +21,5 @@ class UserEntity(id : EntityID<Int>) : IntEntity(id) {
         userName = userName,
         phoneNumber = phNumber
     )
+
 }

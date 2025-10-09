@@ -9,3 +9,4 @@ object NoteTable : IdTable<String>("notes") {
     val noteTitle = text("note_title")
     val noteContains = text("note_contains")
 }
+

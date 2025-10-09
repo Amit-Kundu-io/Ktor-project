@@ -4,6 +4,7 @@ import com.a.di.configureKoin
 import com.a.features.auth.routes.authRouts
 import com.a.features.notes.routes.noteRouts
 import com.a.plugins.serializationPlugin
+import com.a.utils.database.DatabaseFactory
 import com.a.utils.database.initDatabase
 import com.a.utils.docsRoutes
 import com.a.utils.helper.configureStatusPages
@@ -32,9 +33,10 @@ fun main() {
 
 
 fun Application.module() {
+    DatabaseFactory.init()
     configureStatusPages()
     //docsRoutes()
-    initDatabase()
+   // initDatabase()
     configureKoin()
     configureRouting()
     serializationPlugin()

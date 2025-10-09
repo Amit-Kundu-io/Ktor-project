@@ -15,6 +15,9 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import kotlin.system.measureTimeMillis
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.ResultRow
+
 
 class NoteImpl : NoteRepo {
 
@@ -50,15 +53,17 @@ class NoteImpl : NoteRepo {
 
     override suspend fun getAllNote(userId: String): List<Note?>? {
         return dbQuery {
-            //var result: List<Note?>? = null
-
-            val rawNotes = NotesEntity.find { NoteTable.userId eq userId }
             val result = mutableListOf<Note?>()
-            rawNotes.forEachIndexed { i, entity ->
-                 result.add(entity.toNote())
+
+            val time = measureTimeMillis {
+                val rawNotes = NotesEntity.find { NoteTable.userId eq userId }
+               // val result = mutableListOf<Note?>()
+                rawNotes.forEachIndexed { i, entity ->
+                    result.add(entity.toNote())
+                }
             }
 
-            return@dbQuery result
+            return@dbQuery null
         }
     }
 

@@ -17,6 +17,7 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import org.koin.ktor.ext.inject
 import kotlin.getValue
+import kotlin.system.measureTimeMillis
 
 fun Application.noteRouts() {
 
@@ -30,17 +31,21 @@ fun Application.noteRouts() {
                 call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
             }
 
-            get("/getnotes"){
-                val userId = call.request.queryParameters["userId"]
-                val response = services.getAllNotes(userId)
-                call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
-            }
+            get("/getnotes") {
+                val time = measureTimeMillis {
+                    val userId = call.request.queryParameters["userId"]
+                    val response = services.getAllNotes(userId)
+                    call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
+                }
+                println("routs $time ms")
 
-            delete("/delete") {
-                val noteId = call.request.queryParameters["noteId"] ?: throw BadRequestException("Missing note ID")
-                val response = services.deleteNote(noteId)
-                call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
             }
+                delete("/delete") {
+                    val noteId = call.request.queryParameters["noteId"] ?: throw BadRequestException("Missing note ID")
+                    val response = services.deleteNote(noteId)
+                    call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
+                }
+
         }
     }
 }

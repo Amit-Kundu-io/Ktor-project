@@ -6,4 +6,5 @@ import com.a.features.notes.data.models.NoteRequest
 interface NoteRepo {
     suspend fun createAndUpdateNote(request: NoteRequest) : Note?
     suspend fun getAllNote(userId : String) : List<Note?>?
+    suspend fun deleteNote(noteId : String) : Note?
 }

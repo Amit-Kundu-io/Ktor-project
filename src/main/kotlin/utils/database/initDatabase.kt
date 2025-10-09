@@ -39,7 +39,6 @@ fun Application.initDatabase() {
             ?: default
             ?: throw IllegalStateException("Missing environment variable: $key")
 
-    val port = getEnv("PORT", "8080").toInt()
     val url = getEnv("DB_URL")
     val driver = getEnv("DB_DRIVER", "org.postgresql.Driver")
     val user = getEnv("DB_USER")
@@ -50,7 +49,7 @@ fun Application.initDatabase() {
         url = url,
         driver = driver,
         user = user,
-        password = password
+        password = password,
     )
     transaction (db){
         SchemaUtils.create(UserTable)

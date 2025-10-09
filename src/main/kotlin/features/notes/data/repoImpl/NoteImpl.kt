@@ -14,10 +14,10 @@ import org.jetbrains.exposed.sql.update
 class NoteImpl : NoteRepo {
     override suspend fun createAndUpdateNote(request: NoteRequest): Note? {
         return dbQuery {
-            if (request.noteId == null) {
-                // Create a new note
-                val note = NotesEntity.new {
-                    noteId= idGenerate()
+            if (request.noteId.isNullOrBlank()) {
+                // Create a new note with a random string ID
+                val newId = idGenerate()
+                val note = NotesEntity.new(newId) {
                     noteTitle = request.noteTitle
                     noteContains = request.noteContains
                     userId = request.userId
@@ -25,7 +25,7 @@ class NoteImpl : NoteRepo {
                 note.toNote()
             } else {
                 // Update existing note
-                NoteTable.update({ NoteTable.noteId eq request.noteId }) {
+                NoteTable.update({ NoteTable.id eq request.noteId }) {
                     it[noteTitle] = request.noteTitle
                     it[noteContains] = request.noteContains
                 }
@@ -50,12 +50,12 @@ class NoteImpl : NoteRepo {
 
     override suspend fun deleteNote(noteId: String): Note? {
         return dbQuery {
-            val note = NotesEntity.find { NoteTable.noteId eq noteId }
+            val note = NotesEntity.find { NoteTable.id eq noteId }
                 .firstOrNull()
                 ?.toNote()
 
             if (note != null){
-                NoteTable.deleteWhere { NoteTable.noteId eq noteId }
+                NoteTable.deleteWhere { NoteTable.id eq noteId }
                 note
             }
             else {

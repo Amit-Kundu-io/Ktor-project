@@ -30,7 +30,7 @@ fun Application.noteRouts() {
                 call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)
             }
 
-            get("/getnotes"){
+            get("/notes"){
                 val userId = call.request.queryParameters["userId"]
                 val response = services.getAllNotes(userId)
                 call.respond(status = HttpStatusCode.fromValue(response.statusCode), message = response)

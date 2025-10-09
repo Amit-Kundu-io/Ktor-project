@@ -60,7 +60,6 @@ class NoteServiceImpl(
                     statusCode =  HttpStatusCode.NotFound.value
                 )
             }
-            val time = measureTimeMillis {
                 val result = userId.let { noteRepo.getAllNote(it) }
                 if (result == null) {
                     ApiResponse(
@@ -79,16 +78,8 @@ class NoteServiceImpl(
                         statusCode = HttpStatusCode.OK.value
                     )
                 }
-            }
-            println("services get time $time ms")
 
-            ApiResponse(
-                message = listOf("Note get successfully"),
-                succeeded = true,
-                totalItems = 0,
-                data = null,
-                statusCode = HttpStatusCode.OK.value
-            )
+
         } catch (e: Exception) {
             ApiResponse(
                 message = listOf("Failed to get note"),

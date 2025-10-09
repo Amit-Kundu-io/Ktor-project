@@ -10,6 +10,7 @@ import com.a.features.notes.entity.NotesEntity
 import com.a.utils.helper.dbQuery
 import com.a.utils.helper.idGenerate
 import jdk.jfr.internal.JVM.log
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.selectAll
@@ -17,6 +18,7 @@ import org.jetbrains.exposed.sql.update
 import kotlin.system.measureTimeMillis
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 
 class NoteImpl : NoteRepo {
@@ -51,36 +53,23 @@ class NoteImpl : NoteRepo {
     }
 
 
-    override suspend fun getAllNote(userId: String): List<Note?>? {
-        return dbQuery {
-            val result = mutableListOf<Note?>()
-
-            val time = measureTimeMillis {
-                val rawNotes = NotesEntity.find { NoteTable.userId eq userId }
-               // val result = mutableListOf<Note?>()
-                rawNotes.forEachIndexed { i, entity ->
-                    result.add(entity.toNote())
-                }
-            }
-
-            return@dbQuery null
+    override suspend fun getAllNote(userId: String): List<Note?>? =
+        newSuspendedTransaction(Dispatchers.IO) {
+            NotesEntity.find { NoteTable.userId eq userId }
+                .map { it.toNote() }
+                .takeIf { it.isNotEmpty() } // returns null if empty
         }
-    }
+
 
 
     override suspend fun deleteNote(noteId: String): Note? {
         return dbQuery {
-            val note = NotesEntity.find { NoteTable.id eq noteId }
-                .firstOrNull()
-                ?.toNote()
-
-            if (note != null) {
+            NotesEntity.findById(noteId)?.let { note ->
                 NoteTable.deleteWhere { NoteTable.id eq noteId }
-                note
-            } else {
-                null
+                note.toNote()
             }
         }
     }
+
 
 }

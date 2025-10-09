@@ -1,5 +1,7 @@
 package com.a.features.notes.data.repoImpl
 
+import com.a.NotesApp.features.auth.tables.UserTable
+import com.a.features.auth.entity.UserEntity
 import com.a.features.notes.data.models.Note
 import com.a.features.notes.data.models.NoteRequest
 import com.a.features.notes.data.table.NoteTable
@@ -14,6 +16,12 @@ import org.jetbrains.exposed.sql.update
 class NoteImpl : NoteRepo {
     override suspend fun createAndUpdateNote(request: NoteRequest): Note? {
         return dbQuery {
+            val user = UserEntity.find { UserTable.userId eq request.userId }
+                .firstOrNull()
+                ?.toUser()
+
+            if (user == null) return@dbQuery null
+
             if (request.noteId.isNullOrBlank()) {
                 // Create a new note with a random string ID
                 val newId = idGenerate()
@@ -42,7 +50,7 @@ class NoteImpl : NoteRepo {
 
     override suspend fun getAllNote(userId: String): List<Note?>? {
         return dbQuery {
-          val notes =  NotesEntity.find { NoteTable.userId eq userId }
+            val notes = NotesEntity.find { NoteTable.userId eq userId }
                 .map { it.toNote() }
             return@dbQuery notes
         }
@@ -54,11 +62,10 @@ class NoteImpl : NoteRepo {
                 .firstOrNull()
                 ?.toNote()
 
-            if (note != null){
+            if (note != null) {
                 NoteTable.deleteWhere { NoteTable.id eq noteId }
                 note
-            }
-            else {
+            } else {
                 null
             }
         }

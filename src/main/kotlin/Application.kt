@@ -34,6 +34,7 @@ fun main() {
 fun Application.module() {
     configureStatusPages()
     //docsRoutes()
+
     initDatabase()
     configureKoin()
     configureRouting()

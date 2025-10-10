@@ -49,18 +49,10 @@ class NoteImpl : NoteRepo {
     }
 
 
-    override suspend fun getAllNote(userId: String): List<Note> = dbQuery {
-        NoteTable
-            .select(NoteTable.userId eq userId)
+    override suspend fun getAllNote(userId: String): List<Note?>? = dbQuery {
+        NotesEntity.find { NoteTable.userId eq userId }
             .limit(10)
-            .map {
-                Note(
-                    noteId = it[NoteTable.id].value,
-                    noteTitle = it[NoteTable.noteTitle],
-                    noteContains = it[NoteTable.noteContains],
-                    userId = it[NoteTable.userId]
-                )
-            }
+            .map { it.toNote() }
     }
 
 

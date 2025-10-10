@@ -29,7 +29,7 @@ object DatabaseFactory {
             driverClassName = getEnv("DB_DRIVER", "org.postgresql.Driver")
             username = getEnv("DB_USER")
             password = getEnv("DB_PASSWORD")
-            maximumPoolSize = 10
+            maximumPoolSize = 20
             minimumIdle = 5
             isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"

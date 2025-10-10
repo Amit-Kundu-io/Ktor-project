@@ -8,4 +8,5 @@ import com.a.utils.helper.ApiResponse
 interface AuthService {
     suspend fun createUser(request: RegisterRequest) : ApiResponse<User?>
     suspend fun loginUser(request : LoginRequest) : ApiResponse<User?>
+    suspend fun simulateDelayTask(request : String) : ApiResponse<String?>
 }

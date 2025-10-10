@@ -22,19 +22,20 @@ import kotlin.system.measureTimeMillis
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.transaction
 
 
 class NoteImpl : NoteRepo {
 
 
     override suspend fun createAndUpdateNote(request: NoteRequest): Note? = dbQuery {
-        val user = UserEntity.find { UserTable.userId eq request.userId }.firstOrNull() ?: return@dbQuery null
+        val user = UserEntity.find { UserTable.id eq request.userId }.firstOrNull() ?: return@dbQuery null
 
         if (request.noteId.isNullOrBlank()) {
             // Create
             val newId = idGenerate()
             NotesEntity.new(newId) {
-                userId = user.userId
+                userId = user.id.value
                 noteTitle = request.noteTitle
                 noteContains = request.noteContains
             }.toNote()
@@ -48,13 +49,19 @@ class NoteImpl : NoteRepo {
     }
 
 
-
-    override suspend fun getAllNote(userId: String): List<Note?>? = dbQuery {
-        NotesEntity.find { NoteTable.userId eq userId }
+    override suspend fun getAllNote(userId: String): List<Note> = dbQuery {
+        NoteTable
+            .select(NoteTable.userId eq userId)
             .limit(10)
-            .map { it.toNote() }
+            .map {
+                Note(
+                    noteId = it[NoteTable.id].value,
+                    noteTitle = it[NoteTable.noteTitle],
+                    noteContains = it[NoteTable.noteContains],
+                    userId = it[NoteTable.userId]
+                )
+            }
     }
-
 
 
     override suspend fun deleteNote(noteId: String): Note? = dbQuery {
@@ -63,7 +70,6 @@ class NoteImpl : NoteRepo {
         note.delete()
         result
     }
-
 
 
 }

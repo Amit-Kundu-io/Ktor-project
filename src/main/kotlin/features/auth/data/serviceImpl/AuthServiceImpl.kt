@@ -83,4 +83,14 @@ class AuthServiceImpl(
             )
         }
     }
+
+    override suspend fun simulateDelayTask(request: String): ApiResponse<String?> {
+        val data = authRepo.simulateDelayTask(request)
+        return ApiResponse(
+            message = listOf("Task complete"),
+            succeeded = true,
+            data = data,
+            statusCode = 200
+        )
+    }
 }

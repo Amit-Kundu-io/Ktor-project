@@ -35,6 +35,12 @@ fun Application.authRouts(authService: AuthService) {
                 val response = authService.loginUser(request)
                 call.respond(HttpStatusCode.fromValue(response.statusCode), response)
             }
+            post("/simulate-task") {
+                val input = call.receiveText()
+                val result = authService.simulateDelayTask(input)
+                call.respond(mapOf("result" to result))
+            }
+
         }
     }
 }

@@ -6,6 +6,7 @@ import com.a.features.notes.domain.repository.NoteRepo
 import com.a.features.notes.domain.service.NoteServices
 import com.a.utils.helper.ApiResponse
 import io.ktor.http.HttpStatusCode
+import kotlin.math.E
 import kotlin.system.measureTimeMillis
 
 class NoteServiceImpl(
@@ -83,7 +84,7 @@ class NoteServiceImpl(
 
         } catch (e: Exception) {
             ApiResponse(
-                message = listOf("Failed to get note"),
+                message = listOf("Failed to get note $e"),
                 succeeded = false,
                 totalItems = 0,
                 data = null,

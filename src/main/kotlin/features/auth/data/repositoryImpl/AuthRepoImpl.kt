@@ -20,7 +20,7 @@ import kotlin.system.measureTimeMillis
 
 
 class AuthRepoImpl : AuthRepo {
-/*
+
     override suspend fun createUser(request: RegisterRequest): User? {
         // Hash password outside transaction for performance
         val hashedPassword = withContext(Dispatchers.Default) {
@@ -44,7 +44,8 @@ class AuthRepoImpl : AuthRepo {
     }
 
 
- */
+
+    /*
 override suspend fun createUser(request: RegisterRequest): User? {
     val totalStart = System.currentTimeMillis()
 
@@ -59,12 +60,14 @@ override suspend fun createUser(request: RegisterRequest): User? {
     val dbStart = System.currentTimeMillis()
     val result = dbQuery {
         // Fast existence check using raw SQL
-        val exists = UserTable
-            .select ( UserTable.phNumber eq request.phoneNumber )
-            .limit(1)
-            .empty().not()
+        val exists = UserTable.select ( UserTable.phNumber eq request.phoneNumber )
+            .map { it.toUser() }
+            .firstOrNull()
 
-        if (exists) return@dbQuery null
+        if (exists == null) return@dbQuery exists
+
+        print("--------------")
+
 
         // Insert user using raw SQL for performance
         UserTable.insert {
@@ -86,6 +89,8 @@ override suspend fun createUser(request: RegisterRequest): User? {
 
     return result
 }
+
+     */
 
 
     override suspend fun loginUser(request: LoginRequest): Pair<String?, User?>? {

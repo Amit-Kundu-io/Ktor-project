@@ -13,12 +13,8 @@ class AuthServiceImpl(
 ) : AuthService {
     override suspend fun createUser(request: RegisterRequest): ApiResponse<User?> {
         var result: User? = null
-        val time = measureTimeMillis {
-            result = authRepo.createUser(request)
-        }
-        println("create a user executed in $time ms for userId=${result?.userId}")
-
         return try {
+            result = authRepo.createUser(request)
             if (result == null) {
                 ApiResponse(
                     message = listOf("User with this phone number already exists"),

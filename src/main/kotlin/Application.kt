@@ -1,9 +1,9 @@
 package com.a
 import com.a.NotesApp.features.auth.service.AuthService
 import com.a.di.configureKoin
-import com.a.features.auth.routes.authRouts
-import com.a.features.notes.domain.service.NoteServices
-import com.a.features.notes.routes.noteRouts
+import com.a.note_app.features.auth.routes.authRouts
+import com.a.note_app.features.notes.domain.service.NoteServices
+import com.a.note_app.features.notes.routes.noteRouts
 import com.a.plugins.serializationPlugin
 import com.a.utils.database.DatabaseFactory
 import com.a.utils.helper.configureStatusPages

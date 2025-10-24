@@ -1,0 +1,197 @@
+openapi: 3.0.1
+info:
+  title: Ktor API Documentation
+  version: 1.0.0
+  description: API endpoints for user authentication and note management
+
+paths:
+  /api/users/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid registration data
+
+  /api/users/login:
+    post:
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid login data
+
+  /api/users/simulate-task:
+    post:
+      summary: Simulate a delayed task
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Simulated result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+
+  /api/notes/createandupdate:
+    post:
+      summary: Create or update a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+      responses:
+        '200':
+          description: Note created or updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+        '400':
+          description: Invalid note data
+
+  /api/notes/getnotes:
+    get:
+      summary: Get all notes for a user
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteListResponse'
+        '400':
+          description: Missing or invalid userId
+
+  /api/notes/delete:
+    delete:
+      summary: Delete a note
+      parameters:
+        - name: noteId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Note deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+        '400':
+          description: Missing or invalid noteId
+
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      properties:
+        userName:
+          type: string
+        phoneNumber:
+          type: string
+        password:
+          type: string
+      required: [userName, phoneNumber, password]
+
+    LoginRequest:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+        password:
+          type: string
+      required: [phoneNumber, password]
+
+    NoteRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        noteId:
+          type: string
+          nullable: true
+        noteContains:
+          type: string
+        noteTitle:
+          type: string
+      required: [userId, noteContains, noteTitle]
+
+    AuthResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        message:
+          type: string
+        token:
+          type: string
+          nullable: true
+
+    NoteResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        message:
+          type: string
+        noteId:
+          type: string
+
+    NoteListResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        message:
+          type: string
+        notes:
+          type: array
+          items:
+            type: object
+            properties:
+              noteId:
+                type: string
+              noteTitle:
+                type: string
+              noteContains:
+                type: string

@@ -1,0 +1,12 @@
+package com.a.NotesApp.features.auth.service
+
+import com.a.NotesApp.features.auth.models.RegisterRequest
+import com.a.note_app.features.auth.data.models.LoginRequest
+import com.a.note_app.features.auth.data.models.User
+import com.a.utils.helper.ApiResponse
+
+interface AuthService {
+    suspend fun createUser(request: RegisterRequest) : ApiResponse<User?>
+    suspend fun loginUser(request : LoginRequest) : ApiResponse<User?>
+    suspend fun simulateDelayTask(request : String) : ApiResponse<String?>
+}

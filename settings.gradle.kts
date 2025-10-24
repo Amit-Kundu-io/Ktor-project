@@ -5,5 +5,6 @@ dependencyResolutionManagement {
         gradlePluginPortal()
         mavenCentral()
         google()
+        maven("https://jitpack.io")
     }
 }

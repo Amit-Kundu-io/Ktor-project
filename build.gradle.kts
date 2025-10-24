@@ -10,13 +10,18 @@ version = "0.0.1"
 
 application {
     //mainClass.set("io.ktor.server.netty.EngineMain")
-    mainClass.set("com.a.ApplicationKt") 
+    mainClass.set("com.a.ApplicationKt")
 
 }
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
+kotlin {
+    jvmToolchain(17)
+}
+
 
 dependencies {
     implementation(libs.ktor.server.core)
@@ -46,5 +51,10 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages-jvm")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("io.ktor:ktor-server-compression-jvm:2.3.7")
+
+    val ktorVersion = "2.3.4"
+    // Swagger UI / OpenAPI support
+    implementation("io.ktor:ktor-server-swagger:${ktorVersion}")
+    implementation("io.ktor:ktor-server-openapi:${ktorVersion}")
 
 }

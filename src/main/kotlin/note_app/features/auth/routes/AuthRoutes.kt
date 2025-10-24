@@ -8,7 +8,8 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
+
+
 fun Application.authRouts(authService: AuthService) {
     routing {
         route("/api/users") {
@@ -42,7 +43,14 @@ fun Application.authRouts(authService: AuthService) {
             }
 
         }
+
     }
 }
+
+
+
+
+
+
 
 

@@ -9,20 +9,6 @@ import com.a.note_app.features.notes.domain.repository.NoteRepo
 import com.a.note_app.features.notes.entity.NotesEntity
 import com.a.utils.helper.dbQuery
 import com.a.utils.helper.idGenerate
-import jdk.jfr.internal.JVM.log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
-import kotlin.system.measureTimeMillis
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.transactions.transaction
 
 
 class NoteImpl : NoteRepo {

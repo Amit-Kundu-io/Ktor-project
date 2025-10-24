@@ -6,6 +6,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import javax.swing.text.DefaultStyledDocument.ElementSpec.ContentType
 import io.ktor.http.*
+import io.ktor.server.application.call
 
 fun Application.docsRoutes() {
     routing {
